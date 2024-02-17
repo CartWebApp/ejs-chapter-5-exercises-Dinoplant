@@ -14,7 +14,7 @@ function countBy(items, groupName) {
 }
 
 function characterScript(code) {
-  for (let script of SCRIPTS) {
+  for (let script of require) {
     if (script.ranges.some(([from, to]) => {
       return code >= from && code < to;
     })) {
@@ -27,14 +27,15 @@ function characterScript(code) {
 function dominantDirection(text) {
   let scripts = countBy(text, char => {
     let script = characterScript(char.codePointAt(0));
-    return script ? script.name : "none";
-  }).filter(({ name }) => name != "none");
+    return script ? script.direction : "none";
+  }).filter(({name}) => name != "none");
 
-  let total = scripts.reduce((n, { count }) => n + count, 0);
-  if (total === 0) return "No scripts found";
+  let total = scripts.reduce((n, {count}) => n + count, 0);
+  if (total == 0) return "No scripts found";
 
-  if (scripts.length == 0) return `rtl`;
-  
+  return scripts.map(({name, count}) => {
+    return `${Math.round(count * 100 / total)}% ${name}`;
+  }).join(", ");
 }
 
 console.log(dominantDirection("Hello!"));
